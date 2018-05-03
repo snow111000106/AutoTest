@@ -19,7 +19,7 @@ class Mytest(unittest.TestCase):
         desired_caps['appActivity'] = 'com.xingjiabi.shengsheng.app.NavigationActivity'
         desired_caps['appWaitActivity'] ='com.xingjiabi.shengsheng.mine.XjbLoginActivity'
 
-        self.driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps) # 启动app
+        self.driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)  # 启动app
 
 
     def login(self,username,passwd):
@@ -41,8 +41,8 @@ class Mytest(unittest.TestCase):
             sleep(5)
             try:
                 #A=self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvAccountName').text
-                self.assertIsNotNone(self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvAccountName'),'filed')
-                print ('pass')
+                self.assertIsNotNone(self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvAccountName'),'case filed')
+                print ('case pass')
             except NoSuchElementException:
                 print ('NoSuchElementException')
             except:
