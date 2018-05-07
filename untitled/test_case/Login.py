@@ -4,6 +4,10 @@ from time import sleep
 import unittest
 from appium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 PATH = lambda p: os.path.abspath(os.path.join(os.path.dirname(__file__), p))
 
@@ -12,39 +16,67 @@ class Mytest(unittest.TestCase):
     def setUp(self):
         desired_caps = {}
         desired_caps['platformName'] = 'Android'  # 设备系统
-        desired_caps['platformVersion'] = '4.3'  # 设备系统版本
-        desired_caps['deviceName'] = 'emulator-5554'  # 设备名称
-        desired_caps['app'] = os.path.abspath('/Users/snow/Downloads/app-huawei-release_6434.apk')
-        #desired_caps['appPackage'] = 'com.xingjiabi.shengsheng'
-        desired_caps['appActivity'] = 'com.xingjiabi.shengsheng.app.NavigationActivity'
-        desired_caps['appWaitActivity'] ='com.xingjiabi.shengsheng.mine.XjbLoginActivity'
+        desired_caps['platformVersion'] = '6.0'  # 设备系统版本
+        desired_caps['deviceName'] = 'LZKNWCLZUOJZ5HPF'  # 设备名称
+        # desired_caps['app'] = os.path.abspath('/Users/snow/Downloads/app-huawei-release_6434.apk')
+        desired_caps['appPackage'] = 'com.xingjiabi.shengsheng'
+        desired_caps['appActivity'] = 'com.xingjiabi.shengsheng.app.SplashActivity'
+        desired_caps['automationName'] = 'uiautomator2'
+        # desired_caps['appWaitActivity'] ='com.xingjiabi.shengsheng.mine.XjbLoginActivity'
 
         self.driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)  # 启动app
 
 
     def login(self,username,passwd):
+        sleep(3)
+        self.driver.swipe(700, 200, 100, 200, 500)
+        sleep(3)
+        self.driver.swipe(700, 200, 100, 200, 500)
+        sleep(3)
+        self.driver.swipe(700, 200, 100, 200, 500)
+        sleep(3)
+        self.driver.swipe(700, 200, 100, 200, 500)
+        sleep(3)
+        self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvSelectGirl').click()
+        sleep(3)
+        self.driver.find_elements_by_id('com.xingjiabi.shengsheng:id/imgTab')[4].click()
+        sleep(3)
+        self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/btnLogin').click()
+        self.driver.wait_activity('com.xingjiabi.shengsheng.mine.XjbLoginActivity', 5, 1)
         self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvXjbLoginTab').click()
         self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/xjb_login_name').send_keys(username)
         self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/xjb_login_psd').send_keys(passwd)
         self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/xjb_login_but').click()
 
+    def find_toast(self, message):
+        try:
+            element = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, message)))
+            return True
+        except:
+            return False
 
     def test_case(self):
-        csvfile = file('/Users/snow/PycharmProjects/untitled/data/login_test.csv', 'rb')
-        reader = csv.reader(csvfile)
+        csvfile = open('F:/snow/autoTest/untitled/data/login_test.csv', 'r')
+        csvreader = csv.reader(csvfile)
 
-        for line in reader:
-            name=line[0]
-            password=line[1]
-            #account_name=line[2]
-            self.login(name,password)
-            sleep(5)
+        for line in csvreader:
+            name = line[0]
+            password = line[1]
+            self.login(name, password)
+            sleep(3)
+            passwd_error = self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/md_content').text
+            if self.driver.current_activity == 'com.xingjiabi.shengsheng.app.NavigationActivity':
+               print('case pass1')
+            elif passwd_error == '用户名或者密码输错啦，好好想想~ 错误码（a1208）':
+                print('case pass2')
+            elif find_toast("密码错误，请重新输入"):
+                print('case pass3')
             try:
-                #A=self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvAccountName').text
-                self.assertIsNotNone(self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvAccountName'),'case filed')
-                print ('case pass')
+                # A=self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvAccountName').text
+                self.assertIsNotNone(self.driver.find_element_by_id('com.xingjiabi.shengsheng:id/tvAccountName'), 'case filed')
+                print('case pass4')
             except NoSuchElementException:
-                print ('NoSuchElementException')
+                print('NoSuchElementException')
             except:
                 print('error')
             self.driver.reset()
